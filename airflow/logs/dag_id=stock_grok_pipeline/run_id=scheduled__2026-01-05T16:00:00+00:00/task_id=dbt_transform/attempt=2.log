@@ -1,0 +1,50 @@
+[2026-01-06T16:09:59.861+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: stock_grok_pipeline.dbt_transform scheduled__2026-01-05T16:00:00+00:00 [queued]>
+[2026-01-06T16:09:59.876+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: stock_grok_pipeline.dbt_transform scheduled__2026-01-05T16:00:00+00:00 [queued]>
+[2026-01-06T16:09:59.876+0000] {taskinstance.py:2171} INFO - Starting attempt 2 of 2
+[2026-01-06T16:09:59.897+0000] {taskinstance.py:2192} INFO - Executing <Task(BashOperator): dbt_transform> on 2026-01-05 16:00:00+00:00
+[2026-01-06T16:09:59.911+0000] {standard_task_runner.py:60} INFO - Started process 268 to run task
+[2026-01-06T16:09:59.919+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'stock_grok_pipeline', 'dbt_transform', 'scheduled__2026-01-05T16:00:00+00:00', '--job-id', '9', '--raw', '--subdir', 'DAGS_FOLDER/stock_grok_pipeline.py', '--cfg-path', '/tmp/tmpp2mbet63']
+[2026-01-06T16:09:59.930+0000] {standard_task_runner.py:88} INFO - Job 9: Subtask dbt_transform
+[2026-01-06T16:10:00.032+0000] {task_command.py:423} INFO - Running <TaskInstance: stock_grok_pipeline.dbt_transform scheduled__2026-01-05T16:00:00+00:00 [running]> on host 261f37d3c382
+[2026-01-06T16:10:00.243+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='stock_grok_pipeline' AIRFLOW_CTX_TASK_ID='dbt_transform' AIRFLOW_CTX_EXECUTION_DATE='2026-01-05T16:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-01-05T16:00:00+00:00'
+[2026-01-06T16:10:00.248+0000] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-01-06T16:10:00.249+0000] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'cd /dbt && dbt run --profiles-dir .']
+[2026-01-06T16:10:00.277+0000] {subprocess.py:86} INFO - Output:
+[2026-01-06T16:10:04.904+0000] {subprocess.py:97} INFO - Command exited with return code 2
+[2026-01-06T16:10:04.942+0000] {taskinstance.py:2699} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 2.
+[2026-01-06T16:10:04.953+0000] {taskinstance.py:1138} INFO - Marking task as FAILED. dag_id=stock_grok_pipeline, task_id=dbt_transform, execution_date=20260105T160000, start_date=20260106T160959, end_date=20260106T161004
+[2026-01-06T16:10:04.984+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 9 for task dbt_transform (Bash command failed. The command returned a non-zero exit code 2.; 268)
+[2026-01-06T16:10:05.013+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-01-06T16:10:05.062+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-01-06T16:27:47.709+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: stock_grok_pipeline.dbt_transform scheduled__2026-01-05T16:00:00+00:00 [queued]>
+[2026-01-06T16:27:47.728+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: stock_grok_pipeline.dbt_transform scheduled__2026-01-05T16:00:00+00:00 [queued]>
+[2026-01-06T16:27:47.729+0000] {taskinstance.py:2171} INFO - Starting attempt 2 of 2
+[2026-01-06T16:27:47.760+0000] {taskinstance.py:2192} INFO - Executing <Task(BashOperator): dbt_transform> on 2026-01-05 16:00:00+00:00
+[2026-01-06T16:27:47.781+0000] {standard_task_runner.py:60} INFO - Started process 299 to run task
+[2026-01-06T16:27:47.788+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'stock_grok_pipeline', 'dbt_transform', 'scheduled__2026-01-05T16:00:00+00:00', '--job-id', '9', '--raw', '--subdir', 'DAGS_FOLDER/stock_grok_pipeline.py', '--cfg-path', '/tmp/tmpnqze_pfo']
+[2026-01-06T16:27:47.814+0000] {standard_task_runner.py:88} INFO - Job 9: Subtask dbt_transform
+[2026-01-06T16:27:48.091+0000] {task_command.py:423} INFO - Running <TaskInstance: stock_grok_pipeline.dbt_transform scheduled__2026-01-05T16:00:00+00:00 [running]> on host fa2fa317ee9e
+[2026-01-06T16:27:48.273+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='stock_grok_pipeline' AIRFLOW_CTX_TASK_ID='dbt_transform' AIRFLOW_CTX_EXECUTION_DATE='2026-01-05T16:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-01-05T16:00:00+00:00'
+[2026-01-06T16:27:48.275+0000] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-01-06T16:27:48.277+0000] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'cd /dbt && dbt run --profiles-dir .']
+[2026-01-06T16:27:48.302+0000] {subprocess.py:86} INFO - Output:
+[2026-01-06T16:27:52.198+0000] {subprocess.py:97} INFO - Command exited with return code 2
+[2026-01-06T16:27:52.229+0000] {taskinstance.py:2699} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 2.
+[2026-01-06T16:27:52.244+0000] {taskinstance.py:1138} INFO - Marking task as FAILED. dag_id=stock_grok_pipeline, task_id=dbt_transform, execution_date=20260105T160000, start_date=20260106T162747, end_date=20260106T162752
+[2026-01-06T16:27:52.274+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 9 for task dbt_transform (Bash command failed. The command returned a non-zero exit code 2.; 299)
+[2026-01-06T16:27:52.304+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-01-06T16:27:52.362+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check
