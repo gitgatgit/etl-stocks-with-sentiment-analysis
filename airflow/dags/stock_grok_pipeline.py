@@ -40,30 +40,95 @@ def extract_stock_prices(**context):
     try:
         execution_date = context['ds']
 
-        for ticker in TICKERS:
-            try:
-                stock = yf.Ticker(ticker)
-                hist = stock.history(period='1d')
+        # Use yfinance.download() to avoid cookie storage issues
+        # This fetches all tickers at once which is more efficient
+        try:
+            data = yf.download(
+                tickers=' '.join(TICKERS),
+                period='1d',
+                group_by='ticker',
+                auto_adjust=False,
+                progress=False
+            )
 
-                if not hist.empty:
-                    row = hist.iloc[0]
-                    cursor.execute("""
-                        INSERT INTO raw.stock_prices
-                        (ticker, date, open, high, low, close, volume)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT DO NOTHING
-                    """, (
-                        ticker,
-                        execution_date,
-                        float(row['Open']),
-                        float(row['High']),
-                        float(row['Low']),
-                        float(row['Close']),
-                        int(row['Volume'])
-                    ))
+            if not data.empty:
+                # Handle both single and multiple ticker responses
+                if len(TICKERS) == 1:
+                    # Single ticker returns a DataFrame
+                    ticker = TICKERS[0]
+                    if len(data) > 0:
+                        row = data.iloc[-1]
+                        cursor.execute("""
+                            INSERT INTO raw.stock_prices
+                            (ticker, date, open, high, low, close, volume)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            ON CONFLICT DO NOTHING
+                        """, (
+                            ticker,
+                            execution_date,
+                            float(row['Open']),
+                            float(row['High']),
+                            float(row['Low']),
+                            float(row['Close']),
+                            int(row['Volume'])
+                        ))
+                        print(f"Inserted data for {ticker}")
+                else:
+                    # Multiple tickers returns a multi-index DataFrame
+                    for ticker in TICKERS:
+                        try:
+                            if ticker in data.columns.levels[0]:
+                                ticker_data = data[ticker]
+                                if len(ticker_data) > 0:
+                                    row = ticker_data.iloc[-1]
+                                    cursor.execute("""
+                                        INSERT INTO raw.stock_prices
+                                        (ticker, date, open, high, low, close, volume)
+                                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                        ON CONFLICT DO NOTHING
+                                    """, (
+                                        ticker,
+                                        execution_date,
+                                        float(row['Open']),
+                                        float(row['High']),
+                                        float(row['Low']),
+                                        float(row['Close']),
+                                        int(row['Volume'])
+                                    ))
+                                    print(f"Inserted data for {ticker}")
+                        except Exception as e:
+                            print(f"Error processing {ticker}: {e}")
+            else:
+                print("No data returned from yfinance")
 
-            except Exception as e:
-                print(f"Error fetching {ticker}: {e}")
+        except Exception as e:
+            print(f"Error fetching data from yfinance: {e}")
+            # Fall back to individual ticker fetching if download fails
+            for ticker in TICKERS:
+                try:
+                    stock = yf.Ticker(ticker)
+                    hist = stock.history(period='1d')
+
+                    if not hist.empty:
+                        row = hist.iloc[-1]
+                        cursor.execute("""
+                            INSERT INTO raw.stock_prices
+                            (ticker, date, open, high, low, close, volume)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            ON CONFLICT DO NOTHING
+                        """, (
+                            ticker,
+                            execution_date,
+                            float(row['Open']),
+                            float(row['High']),
+                            float(row['Low']),
+                            float(row['Close']),
+                            int(row['Volume'])
+                        ))
+                        print(f"Inserted data for {ticker} (fallback method)")
+
+                except Exception as e:
+                    print(f"Error fetching {ticker} (fallback): {e}")
 
         conn.commit()
     finally:
@@ -93,9 +158,19 @@ def call_grok_api(**context):
         """, (execution_date,))
 
         rows = cursor.fetchall()
+        print(f"Found {len(rows)} stock prices that need explanations")
+
+        if len(rows) == 0:
+            print("No stock prices to process. Make sure extract_stock_prices ran successfully.")
+            return
+
+        api_key = os.getenv('XAI_API_KEY')
+        if not api_key:
+            print("WARNING: XAI_API_KEY not set. Skipping Grok API calls.")
+            return
 
         client = OpenAI(
-            api_key=os.getenv('XAI_API_KEY'),
+            api_key=api_key,
             base_url="https://api.x.ai/v1"
         )
 
