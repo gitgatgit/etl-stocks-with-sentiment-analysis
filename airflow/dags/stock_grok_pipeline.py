@@ -206,7 +206,7 @@ Format as JSON: {{"explanation": "...", "sentiment": "...", "topic": "..."}}"""
 
                 try:
                     response = client.chat.completions.create(
-                        model="grok-beta",
+                        model="grok-3",
                         messages=[{"role": "user", "content": prompt}]
                     )
 
