@@ -205,8 +205,10 @@ Provide:
 Format as JSON: {{"explanation": "...", "sentiment": "...", "topic": "..."}}"""
 
                 try:
+                    grok_model = os.getenv('GROK_MODEL', 'grok-3')
+                    logger.info(f"Using Grok model: {grok_model}")
                     response = client.chat.completions.create(
-                        model="grok-3",
+                        model=grok_model,
                         messages=[{"role": "user", "content": prompt}]
                     )
 
