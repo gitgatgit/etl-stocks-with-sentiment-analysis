@@ -6,6 +6,9 @@ import yfinance as yf
 import psycopg2
 import os
 from openai import OpenAI
+import logging
+
+logger = logging.getLogger(__name__)
 
 default_args = {
     'owner': 'airflow',
@@ -39,10 +42,12 @@ def extract_stock_prices(**context):
 
     try:
         execution_date = context['ds']
+        logger.info(f"Extracting stock prices for execution_date: {execution_date}")
 
         # Use yfinance.download() to avoid cookie storage issues
         # This fetches all tickers at once which is more efficient
         try:
+            logger.info(f"Downloading data for tickers: {TICKERS}")
             data = yf.download(
                 tickers=' '.join(TICKERS),
                 period='1d',
@@ -52,6 +57,7 @@ def extract_stock_prices(**context):
             )
 
             if not data.empty:
+                logger.info(f"Downloaded {len(data)} rows of data")
                 # Handle both single and multiple ticker responses
                 if len(TICKERS) == 1:
                     # Single ticker returns a DataFrame
@@ -72,7 +78,7 @@ def extract_stock_prices(**context):
                             float(row['Close']),
                             int(row['Volume'])
                         ))
-                        print(f"Inserted data for {ticker}")
+                        logger.info(f"Inserted data for {ticker} on {execution_date}")
                 else:
                     # Multiple tickers returns a multi-index DataFrame
                     for ticker in TICKERS:
@@ -95,14 +101,14 @@ def extract_stock_prices(**context):
                                         float(row['Close']),
                                         int(row['Volume'])
                                     ))
-                                    print(f"Inserted data for {ticker}")
+                                    logger.info(f"Inserted data for {ticker} on {execution_date}")
                         except Exception as e:
-                            print(f"Error processing {ticker}: {e}")
+                            logger.error(f"Error processing {ticker}: {e}")
             else:
-                print("No data returned from yfinance")
+                logger.warning("No data returned from yfinance")
 
         except Exception as e:
-            print(f"Error fetching data from yfinance: {e}")
+            logger.error(f"Error fetching data from yfinance: {e}")
             # Fall back to individual ticker fetching if download fails
             for ticker in TICKERS:
                 try:
@@ -125,12 +131,13 @@ def extract_stock_prices(**context):
                             float(row['Close']),
                             int(row['Volume'])
                         ))
-                        print(f"Inserted data for {ticker} (fallback method)")
+                        logger.info(f"Inserted data for {ticker} on {execution_date} (fallback method)")
 
                 except Exception as e:
-                    print(f"Error fetching {ticker} (fallback): {e}")
+                    logger.error(f"Error fetching {ticker} (fallback): {e}")
 
         conn.commit()
+        logger.info(f"Successfully committed stock prices for {execution_date}")
     finally:
         cursor.close()
         conn.close()
@@ -144,6 +151,12 @@ def call_grok_api(**context):
 
     try:
         execution_date = context['ds']
+        logger.info(f"Processing Grok explanations for execution_date: {execution_date}")
+
+        # First, check what dates we have in stock_prices
+        cursor.execute("SELECT DISTINCT date FROM raw.stock_prices ORDER BY date DESC LIMIT 5")
+        available_dates = cursor.fetchall()
+        logger.info(f"Available dates in stock_prices: {available_dates}")
 
         # Get prices that need explanations
         cursor.execute("""
@@ -158,16 +171,18 @@ def call_grok_api(**context):
         """, (execution_date,))
 
         rows = cursor.fetchall()
-        print(f"Found {len(rows)} stock prices that need explanations")
+        logger.info(f"Found {len(rows)} stock prices that need explanations for {execution_date}")
 
         if len(rows) == 0:
-            print("No stock prices to process. Make sure extract_stock_prices ran successfully.")
+            logger.warning(f"No stock prices to process for {execution_date}. Make sure extract_stock_prices ran successfully.")
             return
 
         api_key = os.getenv('XAI_API_KEY')
         if not api_key:
-            print("WARNING: XAI_API_KEY not set. Skipping Grok API calls.")
+            logger.error("XAI_API_KEY not set. Skipping Grok API calls.")
             return
+
+        logger.info(f"XAI_API_KEY is set. Proceeding to call Grok API for {len(rows)} stocks.")
 
         client = OpenAI(
             api_key=api_key,
@@ -179,6 +194,7 @@ def call_grok_api(**context):
 
             if prev_close:
                 pct_change = ((close - prev_close) / prev_close) * 100
+                logger.info(f"Calling Grok API for {ticker} on {date} (change: {pct_change:.2f}%)")
 
                 prompt = f"""Explain why {ticker} moved {pct_change:.2f}% on {date}.
 Provide:
@@ -199,7 +215,7 @@ Format as JSON: {{"explanation": "...", "sentiment": "...", "topic": "..."}}"""
                     try:
                         data = json.loads(result)
                     except json.JSONDecodeError as json_err:
-                        print(f"JSON parse error for {ticker}: {json_err}. Response: {result}")
+                        logger.error(f"JSON parse error for {ticker}: {json_err}. Response: {result}")
                         continue
 
                     cursor.execute("""
@@ -212,11 +228,15 @@ Format as JSON: {{"explanation": "...", "sentiment": "...", "topic": "..."}}"""
                         data.get('sentiment', ''),
                         data.get('topic', '')
                     ))
+                    logger.info(f"Successfully inserted Grok explanation for {ticker}")
 
                 except Exception as e:
-                    print(f"Grok API error for {ticker}: {e}")
+                    logger.error(f"Grok API error for {ticker}: {e}")
+            else:
+                logger.warning(f"Skipping {ticker} - no previous close price available")
 
         conn.commit()
+        logger.info(f"Successfully committed {len(rows)} Grok explanations to database")
     finally:
         cursor.close()
         conn.close()
