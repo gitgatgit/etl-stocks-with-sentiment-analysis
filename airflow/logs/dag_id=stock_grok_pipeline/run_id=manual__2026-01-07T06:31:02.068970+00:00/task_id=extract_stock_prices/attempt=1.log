@@ -1,0 +1,14 @@
+[2026-01-07T06:31:10.163+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: stock_grok_pipeline.extract_stock_prices manual__2026-01-07T06:31:02.068970+00:00 [queued]>
+[2026-01-07T06:31:10.180+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: stock_grok_pipeline.extract_stock_prices manual__2026-01-07T06:31:02.068970+00:00 [queued]>
+[2026-01-07T06:31:10.181+0000] {taskinstance.py:2171} INFO - Starting attempt 1 of 2
+[2026-01-07T06:31:10.204+0000] {taskinstance.py:2192} INFO - Executing <Task(PythonOperator): extract_stock_prices> on 2026-01-07 06:31:02.068970+00:00
+[2026-01-07T06:31:10.218+0000] {standard_task_runner.py:60} INFO - Started process 7601 to run task
+[2026-01-07T06:31:10.225+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'stock_grok_pipeline', 'extract_stock_prices', 'manual__2026-01-07T06:31:02.068970+00:00', '--job-id', '2', '--raw', '--subdir', 'DAGS_FOLDER/stock_grok_pipeline.py', '--cfg-path', '/tmp/tmpguhx7__8']
+[2026-01-07T06:31:10.230+0000] {standard_task_runner.py:88} INFO - Job 2: Subtask extract_stock_prices
+[2026-01-07T06:31:10.329+0000] {task_command.py:423} INFO - Running <TaskInstance: stock_grok_pipeline.extract_stock_prices manual__2026-01-07T06:31:02.068970+00:00 [running]> on host 24bf3341c062
+[2026-01-07T06:31:11.054+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='stock_grok_pipeline' AIRFLOW_CTX_TASK_ID='extract_stock_prices' AIRFLOW_CTX_EXECUTION_DATE='2026-01-07T06:31:02.068970+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-01-07T06:31:02.068970+00:00'
+[2026-01-07T06:31:11.613+0000] {base.py:190} ERROR - Failed to get ticker 'AAPL' reason: UNIQUE constraint failed: _cookieschema.strategy
+[2026-01-07T06:31:14.220+0000] {python.py:201} INFO - Done. Returned value was: None
+[2026-01-07T06:31:14.247+0000] {taskinstance.py:1138} INFO - Marking task as SUCCESS. dag_id=stock_grok_pipeline, task_id=extract_stock_prices, execution_date=20260107T063102, start_date=20260107T063110, end_date=20260107T063114
+[2026-01-07T06:31:14.338+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-01-07T06:31:14.542+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check

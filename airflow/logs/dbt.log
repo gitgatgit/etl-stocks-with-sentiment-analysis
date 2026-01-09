@@ -312,3 +312,427 @@ https://docs.getdbt.com/docs/configure-your-profile
 [0m20:52:27.062526 [debug] [MainThread]: Command `dbt debug` failed at 20:52:27.062339 after 0.13 seconds
 [0m20:52:27.063366 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74de00ade910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74de04a80590>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x74de00ad1a10>]}
 [0m20:52:27.064118 [debug] [MainThread]: Flushing usage events
+[0m06:31:27.592807 [debug] [MainThread]: Got an exception trying to initialize tracking
+[0m06:31:27.592898 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 06:31:27.642809 | b311fc5a-0273-4786-b9f9-7a9c1ba54f98 ==============================
+[0m06:31:27.642809 [info ] [MainThread]: Running with dbt=1.8.8
+
+
+============================== 06:31:27.642809 | f6373335-725e-46e1-8c8d-9b8cf91e348d ==============================
+[0m06:31:27.642809 [info ] [MainThread]: Running with dbt=1.8.8
+[0m06:31:27.644628 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'fail_fast': 'False', 'log_path': '/opt/airflow/logs', 'version_check': 'True', 'profiles_dir': '.', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'static_parser': 'True', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'introspect': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m06:31:27.644628 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'profiles_dir': '.', 'log_path': '/opt/airflow/logs', 'version_check': 'True', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'log_format': 'default', 'static_parser': 'True', 'introspect': 'True', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m06:31:28.174089 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m06:31:28.176034 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m06:31:28.203688 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m06:31:28.204477 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m06:31:28.205797 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m06:31:28.205956 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m06:31:30.997912 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m06:31:31.028969 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m06:31:31.038801 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 3.534297, "process_user_time": 7.113872, "process_kernel_time": 0.608996, "process_mem_max_rss": "217620", "process_in_blocks": "47248", "process_out_blocks": "1888", "command_success": false}
+[0m06:31:31.041792 [debug] [MainThread]: Command `dbt run` failed at 06:31:31.040644 after 3.54 seconds
+[0m06:31:31.043369 [debug] [MainThread]: Flushing usage events
+[0m06:31:31.269239 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m06:31:31.313114 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m06:31:31.404501 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 3.90074, "process_user_time": 7.364156, "process_kernel_time": 0.607913, "process_mem_max_rss": "217416", "process_in_blocks": "28312", "process_out_blocks": "1672", "command_success": false}
+[0m06:31:31.407342 [debug] [MainThread]: Command `dbt run` failed at 06:31:31.406892 after 3.90 seconds
+[0m06:31:31.408958 [debug] [MainThread]: Flushing usage events
+[0m06:36:38.784454 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 06:36:38.807417 | 2474f9fd-b7eb-441d-8f69-d25954dfe745 ==============================
+[0m06:36:38.807417 [info ] [MainThread]: Running with dbt=1.8.8
+[0m06:36:38.809453 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'version_check': 'True', 'debug': 'False', 'log_path': '/opt/airflow/logs', 'profiles_dir': '.', 'fail_fast': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'static_parser': 'True', 'introspect': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m06:36:39.510282 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m06:36:39.576448 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m06:36:39.581855 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m06:36:41.009635 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 06:36:41.029053 | 1867116d-5404-43bd-9a7f-ef0b1d772892 ==============================
+[0m06:36:41.029053 [info ] [MainThread]: Running with dbt=1.8.8
+[0m06:36:41.030587 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'debug': 'False', 'log_path': '/opt/airflow/logs', 'version_check': 'True', 'profiles_dir': '.', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'introspect': 'True', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'static_parser': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m06:36:41.606937 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m06:36:41.635803 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m06:36:41.637721 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m06:36:42.467495 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m06:36:42.471394 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m06:36:42.473121 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 3.8268964, "process_user_time": 6.68309, "process_kernel_time": 0.375824, "process_mem_max_rss": "217432", "process_out_blocks": "24", "command_success": false, "process_in_blocks": "0"}
+[0m06:36:42.474089 [debug] [MainThread]: Command `dbt run` failed at 06:36:42.473897 after 3.83 seconds
+[0m06:36:42.474770 [debug] [MainThread]: Flushing usage events
+[0m06:36:44.153650 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m06:36:44.158052 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m06:36:44.159926 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 3.2991023, "process_user_time": 6.345151, "process_kernel_time": 0.423737, "process_mem_max_rss": "217428", "command_success": false, "process_in_blocks": "0", "process_out_blocks": "0"}
+[0m06:36:44.161347 [debug] [MainThread]: Command `dbt run` failed at 06:36:44.161031 after 3.30 seconds
+[0m06:36:44.162456 [debug] [MainThread]: Flushing usage events
+[0m05:38:09.768918 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 05:38:09.826404 | 4c56b5c7-642b-4cdd-b6db-f5f6467c7080 ==============================
+[0m05:38:09.826404 [info ] [MainThread]: Running with dbt=1.8.8
+[0m05:38:09.827699 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '.', 'fail_fast': 'False', 'version_check': 'True', 'log_path': '/opt/airflow/logs', 'warn_error': 'None', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'introspect': 'True', 'static_parser': 'True', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m05:38:09.825060 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 05:38:09.844165 | 6ce1ce7c-a3c5-4b99-9d7c-07d768af10cd ==============================
+[0m05:38:09.844165 [info ] [MainThread]: Running with dbt=1.8.8
+[0m05:38:09.845509 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'debug': 'False', 'log_path': '/opt/airflow/logs', 'version_check': 'True', 'profiles_dir': '.', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'static_parser': 'True', 'introspect': 'True', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m05:38:10.547429 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m05:38:10.559841 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m05:38:10.588395 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m05:38:10.592385 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m05:38:10.592499 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m05:38:10.594853 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m05:38:13.861155 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m05:38:13.867110 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m05:38:13.869384 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 4.199918, "process_user_time": 7.387734, "process_kernel_time": 0.469521, "process_mem_max_rss": "216216", "process_in_blocks": "25288", "process_out_blocks": "1992", "command_success": false}
+[0m05:38:13.870990 [debug] [MainThread]: Command `dbt run` failed at 05:38:13.870748 after 4.20 seconds
+[0m05:38:13.871769 [debug] [MainThread]: Flushing usage events
+[0m05:38:13.913572 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m05:38:13.918647 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m05:38:13.921639 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 4.2104106, "process_user_time": 7.197724, "process_kernel_time": 0.657999, "process_mem_max_rss": "216204", "process_in_blocks": "32056", "process_out_blocks": "1656", "command_success": false}
+[0m05:38:13.923322 [debug] [MainThread]: Command `dbt run` failed at 05:38:13.922937 after 4.21 seconds
+[0m05:38:13.924641 [debug] [MainThread]: Flushing usage events
+[0m05:43:20.847376 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 05:43:20.860876 | e3f68545-b067-4c22-96c8-4c9c5a9dad76 ==============================
+[0m05:43:20.860876 [info ] [MainThread]: Running with dbt=1.8.8
+[0m05:43:20.862245 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'fail_fast': 'False', 'log_path': '/opt/airflow/logs', 'profiles_dir': '.', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'static_parser': 'True', 'introspect': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m05:43:21.031192 [debug] [MainThread]: Got an exception trying to initialize tracking
+
+
+============================== 05:43:21.045747 | 8fe910de-a4f3-41cc-aa49-b77d5a27adb4 ==============================
+[0m05:43:21.045747 [info ] [MainThread]: Running with dbt=1.8.8
+[0m05:43:21.047065 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'version_check': 'True', 'log_path': '/opt/airflow/logs', 'fail_fast': 'False', 'profiles_dir': '.', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'static_parser': 'True', 'invocation_command': 'dbt run --profiles-dir . --log-path /opt/airflow/logs', 'introspect': 'True', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m05:43:21.263016 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m05:43:21.291188 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m05:43:21.293302 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m05:43:21.583320 [info ] [MainThread]: Registered adapter: postgres=1.9.1
+[0m05:43:21.612174 [debug] [MainThread]: checksum: ec53e341a936509427e16df1c646386a84befec52c1957e3f4359fbc36fc93f5, vars: {}, profile: , target: , version: 1.8.8
+[0m05:43:21.614168 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m05:43:23.991610 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m05:43:23.997893 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m05:43:24.000407 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 3.237872, "process_user_time": 5.799542, "process_kernel_time": 0.317824, "process_mem_max_rss": "216280", "process_out_blocks": "16", "command_success": false, "process_in_blocks": "0"}
+[0m05:43:24.001875 [debug] [MainThread]: Command `dbt run` failed at 05:43:24.001611 after 3.24 seconds
+[0m05:43:24.002862 [debug] [MainThread]: Flushing usage events
+[0m05:43:24.825884 [error] [MainThread]: Encountered an error:
+[Errno 13] Permission denied: '/dbt/target'
+[0m05:43:24.833994 [error] [MainThread]: Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+    ctx.obj["manifest"] = parse_manifest(
+                          ^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+    manifest = ManifestLoader.get_full_manifest(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+    manifest = loader.load()
+               ^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+    self.write_manifest_for_partial_parse()
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+    make_directory(os.path.dirname(path))
+  File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+    return dispatch(args[0].__class__)(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+    raise e
+  File "/home/airflow/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+    os.makedirs(path)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/dbt/target'
+
+[0m05:43:24.836616 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 3.897878, "process_user_time": 6.339714, "process_kernel_time": 0.387741, "process_mem_max_rss": "216284", "process_out_blocks": "8", "command_success": false, "process_in_blocks": "0"}
+[0m05:43:24.839625 [debug] [MainThread]: Command `dbt run` failed at 05:43:24.839209 after 3.90 seconds
+[0m05:43:24.841230 [debug] [MainThread]: Flushing usage events

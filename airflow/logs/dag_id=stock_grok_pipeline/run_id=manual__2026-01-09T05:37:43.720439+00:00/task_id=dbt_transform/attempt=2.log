@@ -1,0 +1,69 @@
+[2026-01-09T05:43:17.462+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: stock_grok_pipeline.dbt_transform manual__2026-01-09T05:37:43.720439+00:00 [queued]>
+[2026-01-09T05:43:17.478+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: stock_grok_pipeline.dbt_transform manual__2026-01-09T05:37:43.720439+00:00 [queued]>
+[2026-01-09T05:43:17.479+0000] {taskinstance.py:2171} INFO - Starting attempt 2 of 2
+[2026-01-09T05:43:17.501+0000] {taskinstance.py:2192} INFO - Executing <Task(BashOperator): dbt_transform> on 2026-01-09 05:37:43.720439+00:00
+[2026-01-09T05:43:17.518+0000] {standard_task_runner.py:60} INFO - Started process 3368 to run task
+[2026-01-09T05:43:17.525+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'stock_grok_pipeline', 'dbt_transform', 'manual__2026-01-09T05:37:43.720439+00:00', '--job-id', '9', '--raw', '--subdir', 'DAGS_FOLDER/stock_grok_pipeline.py', '--cfg-path', '/tmp/tmpxkas95sg']
+[2026-01-09T05:43:17.536+0000] {standard_task_runner.py:88} INFO - Job 9: Subtask dbt_transform
+[2026-01-09T05:43:17.629+0000] {task_command.py:423} INFO - Running <TaskInstance: stock_grok_pipeline.dbt_transform manual__2026-01-09T05:37:43.720439+00:00 [running]> on host b3756c334e78
+[2026-01-09T05:43:17.863+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='stock_grok_pipeline' AIRFLOW_CTX_TASK_ID='dbt_transform' AIRFLOW_CTX_EXECUTION_DATE='2026-01-09T05:37:43.720439+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-01-09T05:37:43.720439+00:00'
+[2026-01-09T05:43:17.874+0000] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-01-09T05:43:17.876+0000] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'cd /dbt && dbt run --profiles-dir . --log-path /opt/***/logs']
+[2026-01-09T05:43:17.919+0000] {subprocess.py:86} INFO - Output:
+[2026-01-09T05:43:21.046+0000] {subprocess.py:93} INFO - [0m05:43:21  Running with dbt=1.8.8
+[2026-01-09T05:43:21.583+0000] {subprocess.py:93} INFO - [0m05:43:21  Registered adapter: postgres=1.9.1
+[2026-01-09T05:43:21.614+0000] {subprocess.py:93} INFO - [0m05:43:21  Unable to do partial parsing because saved manifest not found. Starting full parse.
+[2026-01-09T05:43:24.826+0000] {subprocess.py:93} INFO - [0m05:43:24  Encountered an error:
+[2026-01-09T05:43:24.827+0000] {subprocess.py:93} INFO - [Errno 13] Permission denied: '/dbt/target'
+[2026-01-09T05:43:24.834+0000] {subprocess.py:93} INFO - [0m05:43:24  Traceback (most recent call last):
+[2026-01-09T05:43:24.835+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 138, in wrapper
+[2026-01-09T05:43:24.835+0000] {subprocess.py:93} INFO -     result, success = func(*args, **kwargs)
+[2026-01-09T05:43:24.836+0000] {subprocess.py:93} INFO -                       ^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.836+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 101, in wrapper
+[2026-01-09T05:43:24.836+0000] {subprocess.py:93} INFO -     return func(*args, **kwargs)
+[2026-01-09T05:43:24.836+0000] {subprocess.py:93} INFO -            ^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.837+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 218, in wrapper
+[2026-01-09T05:43:24.837+0000] {subprocess.py:93} INFO -     return func(*args, **kwargs)
+[2026-01-09T05:43:24.838+0000] {subprocess.py:93} INFO -            ^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.838+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 247, in wrapper
+[2026-01-09T05:43:24.838+0000] {subprocess.py:93} INFO -     return func(*args, **kwargs)
+[2026-01-09T05:43:24.839+0000] {subprocess.py:93} INFO -            ^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.839+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 294, in wrapper
+[2026-01-09T05:43:24.839+0000] {subprocess.py:93} INFO -     return func(*args, **kwargs)
+[2026-01-09T05:43:24.839+0000] {subprocess.py:93} INFO -            ^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.840+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/cli/requires.py", line 320, in wrapper
+[2026-01-09T05:43:24.840+0000] {subprocess.py:93} INFO -     ctx.obj["manifest"] = parse_manifest(
+[2026-01-09T05:43:24.840+0000] {subprocess.py:93} INFO -                           ^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.841+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 1898, in parse_manifest
+[2026-01-09T05:43:24.841+0000] {subprocess.py:93} INFO -     manifest = ManifestLoader.get_full_manifest(
+[2026-01-09T05:43:24.841+0000] {subprocess.py:93} INFO -                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.841+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 330, in get_full_manifest
+[2026-01-09T05:43:24.842+0000] {subprocess.py:93} INFO -     manifest = loader.load()
+[2026-01-09T05:43:24.842+0000] {subprocess.py:93} INFO -                ^^^^^^^^^^^^^
+[2026-01-09T05:43:24.842+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 525, in load
+[2026-01-09T05:43:24.843+0000] {subprocess.py:93} INFO -     self.write_manifest_for_partial_parse()
+[2026-01-09T05:43:24.843+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt/parser/manifest.py", line 812, in write_manifest_for_partial_parse
+[2026-01-09T05:43:24.843+0000] {subprocess.py:93} INFO -     make_directory(os.path.dirname(path))
+[2026-01-09T05:43:24.843+0000] {subprocess.py:93} INFO -   File "/usr/local/lib/python3.11/functools.py", line 909, in wrapper
+[2026-01-09T05:43:24.844+0000] {subprocess.py:93} INFO -     return dispatch(args[0].__class__)(*args, **kw)
+[2026-01-09T05:43:24.844+0000] {subprocess.py:93} INFO -            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-01-09T05:43:24.844+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 209, in _
+[2026-01-09T05:43:24.845+0000] {subprocess.py:93} INFO -     raise e
+[2026-01-09T05:43:24.845+0000] {subprocess.py:93} INFO -   File "/home/***/.local/lib/python3.11/site-packages/dbt_common/clients/system.py", line 203, in _
+[2026-01-09T05:43:24.845+0000] {subprocess.py:93} INFO -     os.makedirs(path)
+[2026-01-09T05:43:24.846+0000] {subprocess.py:93} INFO -   File "<frozen os>", line 225, in makedirs
+[2026-01-09T05:43:24.846+0000] {subprocess.py:93} INFO - PermissionError: [Errno 13] Permission denied: '/dbt/target'
+[2026-01-09T05:43:24.846+0000] {subprocess.py:93} INFO - 
+[2026-01-09T05:43:25.233+0000] {subprocess.py:97} INFO - Command exited with return code 2
+[2026-01-09T05:43:25.263+0000] {taskinstance.py:2699} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 2.
+[2026-01-09T05:43:25.273+0000] {taskinstance.py:1138} INFO - Marking task as FAILED. dag_id=stock_grok_pipeline, task_id=dbt_transform, execution_date=20260109T053743, start_date=20260109T054317, end_date=20260109T054325
+[2026-01-09T05:43:25.300+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 9 for task dbt_transform (Bash command failed. The command returned a non-zero exit code 2.; 3368)
+[2026-01-09T05:43:25.341+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-01-09T05:43:25.375+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check
