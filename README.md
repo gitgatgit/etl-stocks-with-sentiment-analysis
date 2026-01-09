@@ -176,4 +176,4 @@ docker-compose logs -f airflow-scheduler
 
 ## License
 
-MIT
+Apache-2.0
