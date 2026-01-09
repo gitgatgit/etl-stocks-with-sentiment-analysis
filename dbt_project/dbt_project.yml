@@ -5,3 +5,6 @@ config-version: 2
 profile: 'stock_analytics'
 
 model-paths: ["models"]
+target-path: "/tmp/dbt_target"
+log-path: "/tmp/dbt_logs"
+packages-install-path: "/tmp/dbt_packages"
