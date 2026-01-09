@@ -234,17 +234,29 @@ enrich_with_grok = PythonOperator(
     dag=dag,
 )
 
+dbt_deps = BashOperator(
+    task_id='dbt_deps',
+    bash_command='cd /dbt && dbt deps --profiles-dir . || true',
+    dag=dag,
+)
+
+dbt_debug = BashOperator(
+    task_id='dbt_debug',
+    bash_command='cd /dbt && dbt debug --profiles-dir .',
+    dag=dag,
+)
+
 dbt_run = BashOperator(
     task_id='dbt_transform',
-    bash_command='cd /dbt && dbt run --profiles-dir . --log-path /opt/airflow/logs',
+    bash_command='cd /dbt && dbt run --profiles-dir .',
     dag=dag,
 )
 
 dbt_test = BashOperator(
     task_id='dbt_test',
-    bash_command='cd /dbt && dbt test --profiles-dir . --log-path /opt/airflow/logs',
+    bash_command='cd /dbt && dbt test --profiles-dir .',
     dag=dag,
 )
 
 # Dependencies
-extract_prices >> enrich_with_grok >> dbt_run >> dbt_test
+extract_prices >> enrich_with_grok >> dbt_deps >> dbt_debug >> dbt_run >> dbt_test
