@@ -13,7 +13,7 @@ x-airflow-common:
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     XAI_API_KEY: ${XAI_API_KEY}
-    GROK_MODEL: ${GROK_MODEL:-grok-3}
+    GROK_MODEL: ${GROK_MODEL:-grok-4-1-fast-reasoning}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs

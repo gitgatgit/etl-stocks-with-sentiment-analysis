@@ -83,9 +83,8 @@ Use the `cli.py` script to manage the pipeline:
 python cli.py run
 
 # Choose a specific Grok model
-python cli.py run --model grok-3
-python cli.py run --model grok-3-mini
-python cli.py run --model grok-3-fast
+python cli.py run --model grok-4-1-fast-reasoning
+python cli.py run --model grok-4-fast-reasoning
 
 # List available Grok models
 python cli.py models
@@ -128,20 +127,19 @@ See [`ml/README.md`](ml/README.md) for detailed ML documentation.
 
 | Model | Description |
 |-------|-------------|
-| `grok-3` | Latest full Grok model (default) |
-| `grok-3-mini` | Smaller, faster variant |
-| `grok-3-fast` | Optimized for speed |
+| `grok-4-1-fast-reasoning` | Latest Grok 4.1 with fast reasoning (default) |
+| `grok-4-fast-reasoning` | Grok 4 with fast reasoning |
 
 Set the model via environment variable:
 ```bash
-export GROK_MODEL=grok-3-mini
+export GROK_MODEL=grok-4-fast-reasoning
 docker-compose up -d
 ```
 
 Or in your `.env` file:
 ```
 XAI_API_KEY=your-api-key
-GROK_MODEL=grok-3
+GROK_MODEL=grok-4-1-fast-reasoning
 ```
 
 ## Project Structure
