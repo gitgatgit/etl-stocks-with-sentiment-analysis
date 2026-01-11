@@ -8,6 +8,7 @@ This pipeline:
 - **Extracts** daily stock prices for major tech stocks (AAPL, MSFT, GOOGL, TSLA, NVDA) using yfinance
 - **Enriches** data with AI-generated explanations for price movements using xAI Grok
 - **Transforms** data using dbt for analytics
+- **Predicts** next-day volatility using machine learning models
 - **Visualizes** results through Metabase dashboards
 
 ## Architecture
@@ -21,7 +22,13 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
                               ↓
                      dbt (Transform & Test)
                               ↓
-                    Metabase (Dashboards)
+                    PostgreSQL (analytics.fct_prices_with_grok)
+                              ↓
+                  ┌───────────┴──────────┐
+                  │                      │
+         ML Models (Volatility)    Metabase (Dashboards)
+                  │
+    PostgreSQL (ml_volatility_predictions)
 ```
 
 ## Tech Stack
@@ -31,7 +38,8 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
 | Orchestration | Apache Airflow 2.8.0 |
 | Database | PostgreSQL 14 |
 | Data Source | yfinance |
-| AI/ML | xAI Grok API |
+| AI Analysis | xAI Grok API |
+| ML Models | XGBoost, Random Forest, scikit-learn |
 | Transformation | dbt |
 | Visualization | Metabase |
 | Runtime | Python 3.11, Docker |
@@ -87,7 +95,34 @@ python cli.py status
 
 # Trigger the Airflow DAG
 python cli.py trigger
+
+# Train ML volatility prediction model
+python cli.py ml-train
+
+# Make volatility predictions
+python cli.py ml-predict --save-db
 ```
+
+### ML Commands
+
+```bash
+# Train a volatility prediction model
+python cli.py ml-train --ml-model xgboost
+
+# Train with specific date range
+python cli.py ml-train --min-date 2024-01-01 --max-date 2024-12-31
+
+# Make predictions and save to database
+python cli.py ml-predict --save-db
+
+# Predict for specific tickers
+python cli.py ml-predict --tickers AAPL MSFT --save-db
+
+# Export predictions to CSV
+python cli.py ml-predict --output predictions.csv
+```
+
+See [`ml/README.md`](ml/README.md) for detailed ML documentation.
 
 ### Available Grok Models
 
@@ -115,7 +150,8 @@ GROK_MODEL=grok-3
 etl-stocks-with-sentiment-analysis/
 ├── airflow/
 │   ├── dags/
-│   │   └── stock_grok_pipeline.py   # Main ETL DAG
+│   │   ├── stock_grok_pipeline.py   # Main ETL DAG
+│   │   └── ml_volatility_pipeline.py # ML training DAG
 │   ├── logs/
 │   └── Dockerfile
 ├── dbt_project/
@@ -124,6 +160,14 @@ etl-stocks-with-sentiment-analysis/
 │   │   └── marts/                    # Fact tables
 │   ├── dbt_project.yml
 │   └── profiles.yml
+├── ml/
+│   ├── data_loader.py                # Database utilities
+│   ├── feature_engineering.py        # Technical indicators & features
+│   ├── train.py                      # Model training script
+│   ├── predict.py                    # Prediction script
+│   ├── models/                       # Trained models
+│   ├── requirements.txt              # ML dependencies
+│   └── README.md                     # ML documentation
 ├── cli.py                            # CLI tool
 ├── docker-compose.yml
 ├── init.sql                          # Database schema
@@ -142,6 +186,7 @@ etl-stocks-with-sentiment-analysis/
 - `analytics.stg_stock_prices` - Cleaned prices with calculated fields
 - `analytics.stg_grok_explanations` - Normalized explanations
 - `analytics.fct_prices_with_grok` - Joined fact table with move categorization
+- `analytics.ml_volatility_predictions` - ML model predictions for next-day volatility
 
 ## Pipeline Schedule
 
@@ -153,6 +198,40 @@ python cli.py trigger
 # or via Airflow CLI
 docker-compose exec airflow-webserver airflow dags trigger stock_grok_pipeline
 ```
+
+## ML Volatility Prediction
+
+The ML module predicts **next-day volatility** for stocks by classifying them into three categories:
+- **Low volatility**: < 2% intraday range
+- **Medium volatility**: 2% - 5% intraday range
+- **High volatility**: > 5% intraday range
+
+### Features
+
+- **Technical Indicators**: RSI, ATR, Bollinger Bands, price returns
+- **Historical Statistics**: Rolling volatility, volume ratios
+- **Sentiment Analysis**: Grok-generated sentiment and topics
+- **Temporal Features**: Day of week, month
+
+### Models
+
+- **XGBoost** (recommended): 200 estimators, max depth 6
+- **Random Forest**: 200 estimators, max depth 10
+
+### Quick Start
+
+```bash
+# Install ML dependencies
+pip install -r ml/requirements.txt
+
+# Train a model
+python cli.py ml-train --ml-model xgboost
+
+# Make predictions
+python cli.py ml-predict --save-db
+```
+
+For detailed documentation, see [`ml/README.md`](ml/README.md).
 
 ## Development
 

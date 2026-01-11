@@ -102,6 +102,41 @@ def cmd_restart(args):
     return run_command("docker-compose up -d", env=env)
 
 
+def cmd_ml_train(args):
+    """Train volatility prediction model."""
+    print("Training ML model for volatility prediction...")
+
+    cmd_parts = ["python", "-m", "ml.train"]
+    cmd_parts.extend(["--model", args.ml_model])
+
+    if args.min_date:
+        cmd_parts.extend(["--min-date", args.min_date])
+    if args.max_date:
+        cmd_parts.extend(["--max-date", args.max_date])
+    if args.test_size:
+        cmd_parts.extend(["--test-size", str(args.test_size)])
+    if args.val_size:
+        cmd_parts.extend(["--val-size", str(args.val_size)])
+
+    return run_command(" ".join(cmd_parts))
+
+
+def cmd_ml_predict(args):
+    """Make volatility predictions."""
+    print("Making volatility predictions...")
+
+    cmd_parts = ["python", "-m", "ml.predict"]
+
+    if args.tickers:
+        cmd_parts.extend(["--tickers"] + args.tickers)
+    if args.save_db:
+        cmd_parts.append("--save-db")
+    if args.output:
+        cmd_parts.extend(["--output", args.output])
+
+    return run_command(" ".join(cmd_parts))
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="CLI for managing the Stock-Grok ETL pipeline",
@@ -161,6 +196,52 @@ def main():
         help="Grok model to use"
     )
     restart_parser.set_defaults(func=cmd_restart)
+
+    # ml-train command
+    ml_train_parser = subparsers.add_parser("ml-train", help="Train volatility prediction model")
+    ml_train_parser.add_argument(
+        "--ml-model",
+        choices=["xgboost", "random_forest"],
+        default="xgboost",
+        help="ML model type to train (default: xgboost)"
+    )
+    ml_train_parser.add_argument(
+        "--min-date",
+        help="Minimum date for training data (YYYY-MM-DD)"
+    )
+    ml_train_parser.add_argument(
+        "--max-date",
+        help="Maximum date for training data (YYYY-MM-DD)"
+    )
+    ml_train_parser.add_argument(
+        "--test-size",
+        type=float,
+        help="Proportion of data for test set (default: 0.2)"
+    )
+    ml_train_parser.add_argument(
+        "--val-size",
+        type=float,
+        help="Proportion of training data for validation (default: 0.1)"
+    )
+    ml_train_parser.set_defaults(func=cmd_ml_train)
+
+    # ml-predict command
+    ml_predict_parser = subparsers.add_parser("ml-predict", help="Make volatility predictions")
+    ml_predict_parser.add_argument(
+        "--tickers",
+        nargs="+",
+        help="Specific tickers to predict (default: all)"
+    )
+    ml_predict_parser.add_argument(
+        "--save-db",
+        action="store_true",
+        help="Save predictions to database"
+    )
+    ml_predict_parser.add_argument(
+        "--output",
+        help="Save predictions to CSV file"
+    )
+    ml_predict_parser.set_defaults(func=cmd_ml_predict)
 
     args = parser.parse_args()
 

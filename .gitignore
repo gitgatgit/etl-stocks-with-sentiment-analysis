@@ -1,2 +1,11 @@
 dbt_project/.env
 .env
+
+# ML artifacts
+ml/models/*.pkl
+ml/models/*.json
+ml/models/latest.pkl
+ml/models/latest_metadata.json
+*.pyc
+__pycache__/
+.pytest_cache/
