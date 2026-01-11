@@ -18,6 +18,7 @@ x-airflow-common:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./dbt_project:/dbt
+    - ./ml:/opt/airflow/ml
   depends_on:
     postgres:
       condition: service_healthy
