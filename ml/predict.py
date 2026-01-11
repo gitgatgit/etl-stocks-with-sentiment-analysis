@@ -16,6 +16,9 @@ from ml.feature_engineering import engineer_features
 class VolatilityPredictor:
     """Make volatility predictions using trained model."""
 
+    # Map numeric classes to human-readable labels
+    CLASS_LABELS = {0: 'low', 1: 'medium', 2: 'high'}
+
     def __init__(self, model_path: str = 'ml/models/latest.pkl',
                  metadata_path: str = 'ml/models/latest_metadata.json'):
         """
@@ -83,11 +86,11 @@ class VolatilityPredictor:
         else:
             confidence = np.ones(len(predictions))
 
-        # Create results DataFrame
+        # Create results DataFrame with human-readable labels
         results = pd.DataFrame({
             'ticker': df['ticker'].values,
             'date': df['date'].values,
-            'predicted_volatility_class': predictions,
+            'predicted_volatility_class': [self.CLASS_LABELS[p] for p in predictions],
             'confidence': confidence
         })
 

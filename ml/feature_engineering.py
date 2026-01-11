@@ -218,10 +218,14 @@ def prepare_train_test_split(df: pd.DataFrame, test_size: float = 0.2,
         val_size: Proportion of training data for validation set
 
     Returns:
-        Tuple of (X_train, X_val, X_test, y_train, y_val, y_test)
+        Tuple of (X_train, X_val, X_test, y_train, y_val, y_test, feature_cols)
     """
     # Remove rows with NaN in target
     df = df.dropna(subset=['target_volatility_class'])
+
+    # Encode target labels to integers for XGBoost compatibility
+    label_map = {'low': 0, 'medium': 1, 'high': 2}
+    df['target_volatility_class'] = df['target_volatility_class'].map(label_map)
 
     # Get feature columns that exist in the dataframe
     all_features = get_feature_columns()

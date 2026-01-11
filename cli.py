@@ -7,12 +7,11 @@ import subprocess
 import sys
 
 AVAILABLE_MODELS = [
-    ("grok-3", "Latest full Grok model (default)"),
-    ("grok-3-mini", "Smaller, faster variant"),
-    ("grok-3-fast", "Optimized for speed"),
+    ("grok-4-1-fast-reasoning", "Latest Grok 4.1 with fast reasoning (default)"),
+    ("grok-4-fast-reasoning", "Grok 4 with fast reasoning"),
 ]
 
-DEFAULT_MODEL = "grok-3"
+DEFAULT_MODEL = "grok-4-1-fast-reasoning"
 
 
 def get_current_model():
@@ -106,7 +105,7 @@ def cmd_ml_train(args):
     """Train volatility prediction model."""
     print("Training ML model for volatility prediction...")
 
-    cmd_parts = ["python", "-m", "ml.train"]
+    cmd_parts = [sys.executable, "-m", "ml.train"]
     cmd_parts.extend(["--model", args.ml_model])
 
     if args.min_date:
@@ -125,7 +124,7 @@ def cmd_ml_predict(args):
     """Make volatility predictions."""
     print("Making volatility predictions...")
 
-    cmd_parts = ["python", "-m", "ml.predict"]
+    cmd_parts = [sys.executable, "-m", "ml.predict"]
 
     if args.tickers:
         cmd_parts.extend(["--tickers"] + args.tickers)

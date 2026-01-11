@@ -15,6 +15,7 @@ from sklearn.metrics import (
     accuracy_score,
     f1_score
 )
+from sklearn.utils.class_weight import compute_sample_weight
 
 try:
     import xgboost as xgb
@@ -83,17 +84,22 @@ class VolatilityModelTrainer:
         print(f"Features: {X_train.shape[1]}")
         print(f"Class distribution:\n{y_train.value_counts()}\n")
 
+        # Compute sample weights to handle class imbalance
+        sample_weights = compute_sample_weight('balanced', y_train)
+        print("✓ Applied balanced class weights to handle imbalance")
+
         self.create_model()
 
         if self.model_type == 'xgboost' and X_val is not None and XGBOOST_AVAILABLE:
             # Use early stopping for XGBoost
             self.model.fit(
                 X_train, y_train,
+                sample_weight=sample_weights,
                 eval_set=[(X_val, y_val)],
                 verbose=False
             )
         else:
-            self.model.fit(X_train, y_train)
+            self.model.fit(X_train, y_train, sample_weight=sample_weights)
 
         print("✓ Training completed")
 
