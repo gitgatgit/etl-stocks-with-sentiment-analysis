@@ -8,7 +8,7 @@ This pipeline:
 - **Extracts** daily stock prices for major tech stocks (AAPL, MSFT, GOOGL, TSLA, NVDA) using yfinance
 - **Enriches** data with AI-generated explanations for price movements using xAI Grok
 - **Transforms** data using dbt for analytics
-- **Visualizes** results through Metabase dashboards
+- **Visualizes** results through interactive Streamlit dashboard and Metabase
 
 ## Architecture
 
@@ -21,7 +21,7 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
                               ↓
                      dbt (Transform & Test)
                               ↓
-                    Metabase (Dashboards)
+              BI Dashboards (Streamlit + Metabase)
 ```
 
 ## Tech Stack
@@ -33,7 +33,7 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
 | Data Source | yfinance |
 | AI/ML | xAI Grok API |
 | Transformation | dbt |
-| Visualization | Metabase |
+| Visualization | Streamlit, Metabase |
 | Runtime | Python 3.11, Docker |
 
 ## Quick Start
@@ -62,6 +62,7 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
    ```
 
 4. Access the interfaces:
+   - **BI Dashboard**: http://localhost:8501 (Interactive Streamlit dashboard)
    - **Airflow UI**: http://localhost:8080 (admin/admin)
    - **Metabase**: http://localhost:3000
    - **PostgreSQL**: localhost:5432 (airflow/airflow)
@@ -118,6 +119,11 @@ etl-stocks-with-sentiment-analysis/
 │   │   └── stock_grok_pipeline.py   # Main ETL DAG
 │   ├── logs/
 │   └── Dockerfile
+├── dashboard/                        # Streamlit BI Dashboard
+│   ├── app.py                       # Main dashboard application
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── README.md
 ├── dbt_project/
 │   ├── models/
 │   │   ├── staging/                  # Staging views
@@ -142,6 +148,48 @@ etl-stocks-with-sentiment-analysis/
 - `analytics.stg_stock_prices` - Cleaned prices with calculated fields
 - `analytics.stg_grok_explanations` - Normalized explanations
 - `analytics.fct_prices_with_grok` - Joined fact table with move categorization
+
+## BI Dashboard Features
+
+The Streamlit dashboard (http://localhost:8501) provides comprehensive visualizations:
+
+### 📊 Overview Tab
+- Real-time key metrics and statistics
+- Multi-stock performance comparison charts
+- Sentiment heatmap across all tickers
+- Recent data summary table
+
+### 📈 Stock Analysis Tab
+- Interactive candlestick charts with OHLC data
+- Volume analysis with color-coded bars
+- Daily price change percentage timelines
+- Statistical summaries per ticker
+
+### 💭 Sentiment Analysis Tab
+- Sentiment distribution pie charts
+- Topic breakdown visualizations
+- Historical sentiment trends over time
+- Sentiment scoring and categorization
+
+### 🔍 AI Explanations Tab
+- Complete Grok AI-generated explanations
+- Organized by date and ticker
+- Price change context for each explanation
+- Topic and sentiment tagging
+
+### ⚠️ Large Moves Tab
+- Automatic alerts for >5% price movements
+- Detailed analysis of each significant move
+- AI explanations for volatility
+- Visual indicators for trends
+
+**Features:**
+- Interactive filters (date range, tickers, sentiment)
+- Real-time data updates (5-minute cache)
+- Responsive charts with zoom and pan
+- Export-ready visualizations
+
+See `dashboard/README.md` for detailed dashboard documentation.
 
 ## Pipeline Schedule
 
