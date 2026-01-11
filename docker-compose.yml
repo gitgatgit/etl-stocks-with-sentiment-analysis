@@ -97,6 +97,30 @@ services:
     volumes:
       - metabase-data:/metabase-data
 
+  dashboard:
+    image: python:3.11-slim
+    ports:
+      - "8501:8501"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: airflow
+      DB_USER: airflow
+      DB_PASSWORD: airflow
+    volumes:
+      - ./dashboard.py:/app/dashboard.py
+      - ./requirements-dashboard.txt:/app/requirements.txt
+    working_dir: /app
+    command: >
+      bash -c "pip install -q -r requirements.txt &&
+               streamlit run dashboard.py --server.port 8501 --server.headless true --server.address 0.0.0.0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - etl-network
+    restart: always
+
 volumes:
   postgres-db-volume:
   metabase-data:

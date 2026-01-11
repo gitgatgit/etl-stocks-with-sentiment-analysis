@@ -9,7 +9,7 @@ This pipeline:
 - **Enriches** data with AI-generated explanations for price movements using xAI Grok
 - **Transforms** data using dbt for analytics
 - **Predicts** next-day volatility using machine learning models
-- **Visualizes** results through Metabase dashboards
+- **Visualizes** results through Streamlit and Metabase dashboards
 
 ## Architecture
 
@@ -24,9 +24,10 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
                               ↓
                     PostgreSQL (analytics.fct_prices_with_grok)
                               ↓
-                  ┌───────────┴──────────┐
-                  │                      │
-         ML Models (Volatility)    Metabase (Dashboards)
+                  ┌───────────┼───────────┐
+                  │           │           │
+         ML Models    Streamlit    Metabase
+         (Volatility) (Dashboard)  (Dashboards)
                   │
     PostgreSQL (ml_volatility_predictions)
 ```
@@ -41,7 +42,7 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
 | AI Analysis | xAI Grok API |
 | ML Models | XGBoost, Random Forest, scikit-learn |
 | Transformation | dbt |
-| Visualization | Metabase |
+| Visualization | Streamlit, Metabase |
 | Runtime | Python 3.11, Docker |
 
 ## Quick Start

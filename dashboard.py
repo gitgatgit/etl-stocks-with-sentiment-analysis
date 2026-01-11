@@ -20,12 +20,13 @@ st.set_page_config(
 
 @st.cache_resource
 def get_db_connection():
+    import os
     return psycopg2.connect(
-        host='localhost',
-        port=5432,
-        database='airflow',
-        user='airflow',
-        password='airflow'
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=int(os.getenv('DB_PORT', 5432)),
+        database=os.getenv('DB_NAME', 'airflow'),
+        user=os.getenv('DB_USER', 'airflow'),
+        password=os.getenv('DB_PASSWORD', 'airflow')
     )
 
 @st.cache_data(ttl=60)
