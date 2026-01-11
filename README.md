@@ -8,6 +8,7 @@ This pipeline:
 - **Extracts** daily stock prices for major tech stocks (AAPL, MSFT, GOOGL, TSLA, NVDA) using yfinance
 - **Enriches** data with AI-generated explanations for price movements using xAI Grok
 - **Transforms** data using dbt for analytics
+- **Predicts** volatility using ML models (GARCH and LSTM) with full MLOps infrastructure
 - **Visualizes** results through interactive Streamlit dashboard and Metabase
 
 ## Architecture
@@ -21,7 +22,14 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
                               ↓
                      dbt (Transform & Test)
                               ↓
-              BI Dashboards (Streamlit + Metabase)
+                ┌─────────────┴──────────────┐
+                ↓                            ↓
+       ML Models (GARCH/LSTM)     BI Dashboards (Streamlit + Metabase)
+       MLflow + FastAPI
+                ↓
+    PostgreSQL (ml.predictions)
+                ↓
+          Dashboard Visualization
 ```
 
 ## Tech Stack
@@ -31,7 +39,10 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
 | Orchestration | Apache Airflow 2.8.0 |
 | Database | PostgreSQL 14 |
 | Data Source | yfinance |
-| AI/ML | xAI Grok API |
+| AI/Sentiment | xAI Grok API |
+| ML Models | GARCH (arch), LSTM (PyTorch) |
+| MLOps | MLflow 2.10.2 |
+| Model Serving | FastAPI |
 | Transformation | dbt |
 | Visualization | Streamlit, Metabase |
 | Runtime | Python 3.11, Docker |
@@ -64,6 +75,8 @@ yfinance (Stock Data) → PostgreSQL (raw.stock_prices)
 4. Access the interfaces:
    - **BI Dashboard**: http://localhost:8501 (Interactive Streamlit dashboard)
    - **Airflow UI**: http://localhost:8080 (admin/admin)
+   - **MLflow UI**: http://localhost:5000 (Model tracking and registry)
+   - **Model API**: http://localhost:8000 (Volatility predictions API)
    - **Metabase**: http://localhost:3000
    - **PostgreSQL**: localhost:5432 (airflow/airflow)
 
@@ -116,11 +129,22 @@ GROK_MODEL=grok-3
 etl-stocks-with-sentiment-analysis/
 ├── airflow/
 │   ├── dags/
-│   │   └── stock_grok_pipeline.py   # Main ETL DAG
+│   │   ├── stock_grok_pipeline.py         # Main ETL DAG
+│   │   ├── ml_train_volatility_models.py  # Model training DAG
+│   │   └── ml_predict_volatility.py       # Prediction DAG
 │   ├── logs/
 │   └── Dockerfile
 ├── dashboard/                        # Streamlit BI Dashboard
 │   ├── app.py                       # Main dashboard application
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── README.md
+├── ml_models/                        # MLOps Infrastructure
+│   ├── models/
+│   │   ├── volatility_garch.py      # GARCH model
+│   │   └── volatility_lstm.py       # LSTM model
+│   ├── train_volatility_models.py   # Training script
+│   ├── api.py                       # FastAPI serving
 │   ├── requirements.txt
 │   ├── Dockerfile
 │   └── README.md
@@ -148,6 +172,64 @@ etl-stocks-with-sentiment-analysis/
 - `analytics.stg_stock_prices` - Cleaned prices with calculated fields
 - `analytics.stg_grok_explanations` - Normalized explanations
 - `analytics.fct_prices_with_grok` - Joined fact table with move categorization
+
+### ML Tables
+
+- `ml.volatility_predictions` - Model predictions (GARCH and LSTM)
+- `ml.model_metrics` - Model performance metrics (RMSE, MAE, MSE)
+
+## MLOps Infrastructure
+
+This project includes a complete MLOps pipeline for volatility forecasting:
+
+### Machine Learning Models
+
+1. **GARCH Model**
+   - Traditional financial volatility model
+   - GARCH(1,1) specification
+   - Best for short-term volatility (1-5 days)
+
+2. **LSTM Model**
+   - Deep learning approach using PyTorch
+   - 2-layer LSTM with 64 hidden units
+   - Best for medium-term patterns (5-10 days)
+
+### MLflow Tracking
+
+- **Experiment tracking**: Log parameters, metrics, and artifacts
+- **Model registry**: Version control for all models
+- **Model comparison**: Compare GARCH vs LSTM performance
+- **Access**: http://localhost:5000
+
+### Model Serving API
+
+- **FastAPI endpoint**: Real-time volatility predictions
+- **Multi-model support**: GARCH and LSTM
+- **Forecast horizon**: 1-30 days ahead
+- **Access**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+
+### Airflow DAGs
+
+1. **ml_train_volatility_models**
+   - Schedule: Weekly (Mondays 2 AM)
+   - Trains GARCH and LSTM models for all tickers
+   - Evaluates and compares performance
+   - Registers models in MLflow
+
+2. **ml_predict_volatility**
+   - Schedule: Daily (Weekdays 5 PM)
+   - Generates 5-day volatility forecasts
+   - Stores predictions in database
+   - Updates dashboard visualizations
+
+### Model Performance
+
+Typical RMSE ranges:
+- GARCH: 1.5 - 3.0
+- LSTM: 1.0 - 2.5
+
+See `ml_models/README.md` for detailed MLOps documentation.
 
 ## BI Dashboard Features
 
@@ -183,11 +265,19 @@ The Streamlit dashboard (http://localhost:8501) provides comprehensive visualiza
 - AI explanations for volatility
 - Visual indicators for trends
 
+### 🔮 Volatility Forecast Tab
+- GARCH and LSTM model predictions
+- 5-day forward volatility forecasts
+- Model comparison visualizations
+- Performance metrics (RMSE, MAE)
+- Forecast accuracy tracking
+
 **Features:**
 - Interactive filters (date range, tickers, sentiment)
 - Real-time data updates (5-minute cache)
 - Responsive charts with zoom and pan
 - Export-ready visualizations
+- ML model predictions integration
 
 See `dashboard/README.md` for detailed dashboard documentation.
 

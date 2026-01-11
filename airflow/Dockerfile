@@ -12,4 +12,7 @@ RUN pip install --no-cache-dir \
     yfinance \
     openai \
     dbt-core \
-    dbt-postgres
+    dbt-postgres \
+    mlflow==2.10.2 \
+    requests \
+    psycopg2-binary

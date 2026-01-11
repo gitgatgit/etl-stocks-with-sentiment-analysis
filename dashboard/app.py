@@ -57,6 +57,44 @@ def get_fact_data():
     """
     return load_data(query)
 
+@st.cache_data(ttl=300)
+def get_volatility_predictions():
+    """Load volatility predictions from ML models"""
+    query = """
+    SELECT
+        ticker,
+        model_type,
+        forecast_date,
+        predicted_volatility,
+        prediction_timestamp
+    FROM ml.volatility_predictions
+    WHERE forecast_date >= CURRENT_DATE
+    ORDER BY ticker, model_type, forecast_date
+    """
+    try:
+        return load_data(query)
+    except:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=300)
+def get_model_metrics():
+    """Load model performance metrics"""
+    query = """
+    SELECT
+        ticker,
+        model_type,
+        metric_name,
+        metric_value,
+        created_at
+    FROM ml.model_metrics
+    WHERE metric_name IN ('rmse', 'mae', 'mse')
+    ORDER BY ticker, model_type, created_at DESC
+    """
+    try:
+        return load_data(query)
+    except:
+        return pd.DataFrame()
+
 def create_candlestick_chart(df, ticker):
     """Create candlestick chart with volume"""
     df_ticker = df[df['ticker'] == ticker].sort_values('date')
@@ -298,12 +336,13 @@ def main():
             df = df[df['sentiment'].isin(sentiment_filter)]
 
         # Main content tabs
-        tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
             "📊 Overview",
             "📈 Stock Analysis",
             "💭 Sentiment Analysis",
             "🔍 AI Explanations",
-            "⚠️ Large Moves"
+            "⚠️ Large Moves",
+            "🔮 Volatility Forecast"
         ])
 
         with tab1:
@@ -515,6 +554,174 @@ def main():
                         if pd.notna(row['explanation']):
                             st.markdown("**AI Explanation:**")
                             st.write(row['explanation'])
+
+        with tab6:
+            st.header("Volatility Forecasting (ML Models)")
+
+            # Load predictions
+            df_predictions = get_volatility_predictions()
+            df_metrics = get_model_metrics()
+
+            if df_predictions.empty:
+                st.warning("⚠️ No volatility predictions available yet. Run the ML training and prediction pipelines first.")
+                st.info("To generate predictions:\n1. Train models: Trigger the `ml_train_volatility_models` DAG in Airflow\n2. Generate forecasts: Trigger the `ml_predict_volatility` DAG")
+            else:
+                # Ticker selector
+                ticker_vol = st.selectbox(
+                    "Select ticker for volatility analysis",
+                    options=selected_tickers if selected_tickers else all_tickers,
+                    key='vol_ticker'
+                )
+
+                if ticker_vol:
+                    # Filter predictions for selected ticker
+                    df_ticker_pred = df_predictions[df_predictions['ticker'] == ticker_vol]
+
+                    # Model comparison
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        st.subheader("GARCH Model Forecast")
+                        df_garch = df_ticker_pred[df_ticker_pred['model_type'] == 'GARCH']
+
+                        if not df_garch.empty:
+                            fig_garch = go.Figure()
+                            fig_garch.add_trace(go.Scatter(
+                                x=df_garch['forecast_date'],
+                                y=df_garch['predicted_volatility'],
+                                mode='lines+markers',
+                                name='GARCH Forecast',
+                                line=dict(color='blue', width=2),
+                                marker=dict(size=8)
+                            ))
+
+                            fig_garch.update_layout(
+                                title=f'{ticker_vol} Volatility Forecast (GARCH)',
+                                xaxis_title='Date',
+                                yaxis_title='Predicted Volatility (%)',
+                                height=400
+                            )
+
+                            st.plotly_chart(fig_garch, use_container_width=True)
+
+                            # Show forecast values
+                            st.dataframe(
+                                df_garch[['forecast_date', 'predicted_volatility']].rename(
+                                    columns={'forecast_date': 'Date', 'predicted_volatility': 'Volatility (%)'}
+                                ),
+                                use_container_width=True
+                            )
+                        else:
+                            st.info("No GARCH predictions available for this ticker")
+
+                    with col2:
+                        st.subheader("LSTM Model Forecast")
+                        df_lstm = df_ticker_pred[df_ticker_pred['model_type'] == 'LSTM']
+
+                        if not df_lstm.empty:
+                            fig_lstm = go.Figure()
+                            fig_lstm.add_trace(go.Scatter(
+                                x=df_lstm['forecast_date'],
+                                y=df_lstm['predicted_volatility'],
+                                mode='lines+markers',
+                                name='LSTM Forecast',
+                                line=dict(color='green', width=2),
+                                marker=dict(size=8)
+                            ))
+
+                            fig_lstm.update_layout(
+                                title=f'{ticker_vol} Volatility Forecast (LSTM)',
+                                xaxis_title='Date',
+                                yaxis_title='Predicted Volatility (%)',
+                                height=400
+                            )
+
+                            st.plotly_chart(fig_lstm, use_container_width=True)
+
+                            # Show forecast values
+                            st.dataframe(
+                                df_lstm[['forecast_date', 'predicted_volatility']].rename(
+                                    columns={'forecast_date': 'Date', 'predicted_volatility': 'Volatility (%)'}
+                                ),
+                                use_container_width=True
+                            )
+                        else:
+                            st.info("No LSTM predictions available for this ticker")
+
+                    # Model comparison chart
+                    st.subheader("Model Comparison")
+
+                    if not df_ticker_pred.empty:
+                        fig_compare = go.Figure()
+
+                        for model_type in df_ticker_pred['model_type'].unique():
+                            df_model = df_ticker_pred[df_ticker_pred['model_type'] == model_type]
+                            fig_compare.add_trace(go.Scatter(
+                                x=df_model['forecast_date'],
+                                y=df_model['predicted_volatility'],
+                                mode='lines+markers',
+                                name=model_type,
+                                line=dict(width=2),
+                                marker=dict(size=8)
+                            ))
+
+                        fig_compare.update_layout(
+                            title=f'{ticker_vol} Volatility Forecast Comparison',
+                            xaxis_title='Date',
+                            yaxis_title='Predicted Volatility (%)',
+                            height=400,
+                            hovermode='x unified'
+                        )
+
+                        st.plotly_chart(fig_compare, use_container_width=True)
+
+                    # Model performance metrics
+                    st.subheader("Model Performance Metrics")
+
+                    if not df_metrics.empty:
+                        df_ticker_metrics = df_metrics[df_metrics['ticker'] == ticker_vol]
+
+                        if not df_ticker_metrics.empty:
+                            # Get latest metrics for each model
+                            latest_metrics = df_ticker_metrics.sort_values('created_at', ascending=False).groupby(['model_type', 'metric_name']).first().reset_index()
+
+                            # Pivot for display
+                            metrics_pivot = latest_metrics.pivot(
+                                index='model_type',
+                                columns='metric_name',
+                                values='metric_value'
+                            )
+
+                            st.dataframe(metrics_pivot, use_container_width=True)
+
+                            # Visualize metrics
+                            if 'rmse' in metrics_pivot.columns:
+                                fig_metrics = go.Figure(data=[
+                                    go.Bar(
+                                        x=metrics_pivot.index,
+                                        y=metrics_pivot['rmse'],
+                                        text=metrics_pivot['rmse'].round(4),
+                                        textposition='outside'
+                                    )
+                                ])
+
+                                fig_metrics.update_layout(
+                                    title=f'{ticker_vol} Model RMSE Comparison (Lower is Better)',
+                                    xaxis_title='Model Type',
+                                    yaxis_title='RMSE',
+                                    height=300
+                                )
+
+                                st.plotly_chart(fig_metrics, use_container_width=True)
+                        else:
+                            st.info("No performance metrics available for this ticker yet")
+                    else:
+                        st.info("No model performance metrics available. Train models to generate metrics.")
+
+                    # Prediction timestamp
+                    if not df_ticker_pred.empty:
+                        latest_pred_time = df_ticker_pred['prediction_timestamp'].max()
+                        st.caption(f"Last updated: {latest_pred_time}")
 
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
