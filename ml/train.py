@@ -227,6 +227,8 @@ def main():
                        help='Proportion of data for test set')
     parser.add_argument('--val-size', type=float, default=0.1,
                        help='Proportion of training data for validation')
+    parser.add_argument('--db-host', type=str, default='localhost',
+                       help='Database host')
 
     args = parser.parse_args()
 
@@ -236,7 +238,7 @@ def main():
 
     # Load data
     print("\n1. Loading data from database...")
-    loader = StockDataLoader()
+    loader = StockDataLoader(host=args.db_host)
 
     stats = loader.get_data_statistics()
     print(f"\nData statistics:")

@@ -3,7 +3,8 @@ version: '3.8'
 x-airflow-common:
   &airflow-common
   build:
-    context: ./airflow
+    context: .
+    dockerfile: airflow/Dockerfile
   env_file:
     - .env
   environment:
@@ -110,7 +111,7 @@ services:
       DB_PASSWORD: airflow
     volumes:
       - ./dashboard.py:/app/dashboard.py
-      - ./requirements-dashboard.txt:/app/requirements.txt
+      - ./requirements.txt:/app/requirements.txt
     working_dir: /app
     command: >
       bash -c "pip install -q -r requirements.txt &&

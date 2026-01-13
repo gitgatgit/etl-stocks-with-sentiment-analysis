@@ -20,16 +20,19 @@ class VolatilityPredictor:
     CLASS_LABELS = {0: 'low', 1: 'medium', 2: 'high'}
 
     def __init__(self, model_path: str = 'ml/models/latest.pkl',
-                 metadata_path: str = 'ml/models/latest_metadata.json'):
+                 metadata_path: str = 'ml/models/latest_metadata.json',
+                 db_host: str = 'localhost'):
         """
         Initialize predictor with trained model.
 
         Args:
             model_path: Path to pickled model file
             metadata_path: Path to model metadata JSON
+            db_host: Database host for loading data
         """
         self.model_path = Path(model_path)
         self.metadata_path = Path(metadata_path)
+        self.db_host = db_host
         self.model = None
         self.metadata = None
         self.feature_cols = None
@@ -116,7 +119,7 @@ class VolatilityPredictor:
         print("\nPredicting next-day volatility...")
 
         # Load recent data for feature engineering
-        loader = StockDataLoader()
+        loader = StockDataLoader(host=self.db_host)
         df = loader.load_training_data()
 
         if tickers:
@@ -166,6 +169,8 @@ def main():
                        help='Save predictions to database')
     parser.add_argument('--output', type=str, default=None,
                        help='Save predictions to CSV file')
+    parser.add_argument('--db-host', type=str, default='localhost',
+                       help='Database host')
 
     args = parser.parse_args()
 
@@ -176,7 +181,8 @@ def main():
     # Initialize predictor
     predictor = VolatilityPredictor(
         model_path=args.model,
-        metadata_path=args.metadata
+        metadata_path=args.metadata,
+        db_host=args.db_host
     )
 
     # Make predictions

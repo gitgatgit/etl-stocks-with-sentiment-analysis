@@ -42,7 +42,7 @@ check_deps = BashOperator(
 # Task 2: Train model
 train_model = BashOperator(
     task_id='train_volatility_model',
-    bash_command='cd /opt/airflow && python -m ml.train --model xgboost',
+    bash_command='cd /opt/airflow && python -m ml.train --model xgboost --db-host postgres --output-dir /opt/airflow/logs/ml_models',
     dag=dag,
 )
 
@@ -50,7 +50,7 @@ train_model = BashOperator(
 # Task 3: Make predictions and save to database
 make_predictions = BashOperator(
     task_id='make_predictions',
-    bash_command='cd /opt/airflow && python -m ml.predict --save-db',
+    bash_command='cd /opt/airflow && python -m ml.predict --save-db --db-host postgres --model /opt/airflow/logs/ml_models/latest.pkl --metadata /opt/airflow/logs/ml_models/latest_metadata.json',
     dag=dag,
 )
 

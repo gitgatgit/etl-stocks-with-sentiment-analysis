@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y git && \
 
 USER airflow
 
-# Copy ML requirements first
-COPY --chown=airflow:root ml/requirements.txt /tmp/ml-requirements.txt
+# Copy requirements
+COPY --chown=airflow:root requirements.txt /tmp/requirements.txt
 
 # Install all dependencies
 RUN pip install --no-cache-dir \
@@ -18,5 +18,5 @@ RUN pip install --no-cache-dir \
     openai \
     dbt-core \
     dbt-postgres && \
-    pip install --no-cache-dir -r /tmp/ml-requirements.txt && \
-    rm /tmp/ml-requirements.txt
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
