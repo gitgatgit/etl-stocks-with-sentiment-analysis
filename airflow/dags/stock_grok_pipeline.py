@@ -7,6 +7,15 @@ import psycopg2
 import os
 from openai import OpenAI
 import logging
+import sys
+
+# Add utils to path for alert imports
+sys.path.insert(0, '/opt/airflow')
+from airflow.utils.alerts import (
+    slack_failure_callback,
+    slack_success_callback,
+    slack_sla_miss_callback,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +25,7 @@ default_args = {
     'start_date': datetime(2026, 1, 1),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'on_failure_callback': slack_failure_callback,
 }
 
 dag = DAG(
@@ -23,6 +33,7 @@ dag = DAG(
     default_args=default_args,
     schedule_interval='0 16 * * 1-5',  # Daily at 4pm EST weekdays
     catchup=False,
+    sla_miss_callback=slack_sla_miss_callback,
 )
 
 TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']
@@ -291,6 +302,7 @@ dbt_test = BashOperator(
     task_id='dbt_test',
     bash_command='cd /dbt && dbt test --profiles-dir .',
     dag=dag,
+    on_success_callback=slack_success_callback,
 )
 
 # Dependencies

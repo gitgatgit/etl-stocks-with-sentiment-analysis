@@ -13,7 +13,8 @@ from sklearn.metrics import (
     classification_report,
     confusion_matrix,
     accuracy_score,
-    f1_score
+    f1_score,
+    recall_score
 )
 from sklearn.utils.class_weight import compute_sample_weight
 
@@ -26,6 +27,7 @@ except ImportError:
 
 from ml.data_loader import StockDataLoader
 from ml.feature_engineering import engineer_features, prepare_train_test_split
+from ml.mlflow_utils import MLflowTracker, create_model_signature
 
 
 class VolatilityModelTrainer:
@@ -124,10 +126,14 @@ class VolatilityModelTrainer:
         accuracy = accuracy_score(y_test, y_pred)
         f1_macro = f1_score(y_test, y_pred, average='macro')
         f1_weighted = f1_score(y_test, y_pred, average='weighted')
+        recall_macro = recall_score(y_test, y_pred, average='macro')
+        recall_weighted = recall_score(y_test, y_pred, average='weighted')
 
         print(f"Accuracy: {accuracy:.4f}")
         print(f"F1 Score (Macro): {f1_macro:.4f}")
         print(f"F1 Score (Weighted): {f1_weighted:.4f}")
+        print(f"Recall (Macro): {recall_macro:.4f}")
+        print(f"Recall (Weighted): {recall_weighted:.4f}")
 
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
@@ -151,6 +157,8 @@ class VolatilityModelTrainer:
             'accuracy': float(accuracy),
             'f1_macro': float(f1_macro),
             'f1_weighted': float(f1_weighted),
+            'recall_macro': float(recall_macro),
+            'recall_weighted': float(recall_weighted),
             'confusion_matrix': cm.tolist(),
             'dataset': dataset_name,
             'n_samples': len(y_test)
@@ -229,12 +237,26 @@ def main():
                        help='Proportion of training data for validation')
     parser.add_argument('--db-host', type=str, default='localhost',
                        help='Database host')
+    parser.add_argument('--no-mlflow', action='store_true',
+                       help='Disable MLflow tracking')
+    parser.add_argument('--mlflow-experiment', type=str, default='volatility-prediction',
+                       help='MLflow experiment name')
 
     args = parser.parse_args()
 
     print("=" * 60)
     print("VOLATILITY PREDICTION MODEL TRAINING")
     print("=" * 60)
+
+    # Initialize MLflow tracking
+    mlflow_tracker = None
+    if not args.no_mlflow:
+        try:
+            mlflow_tracker = MLflowTracker(experiment_name=args.mlflow_experiment)
+            print("\n✓ MLflow tracking enabled")
+        except Exception as e:
+            print(f"\n⚠ MLflow tracking disabled: {e}")
+            mlflow_tracker = None
 
     # Load data
     print("\n1. Loading data from database...")
@@ -276,6 +298,45 @@ def main():
     print("\n4. Training model...")
     trainer = VolatilityModelTrainer(model_type=args.model)
     trainer.feature_cols = feature_cols
+
+    # Start MLflow run
+    if mlflow_tracker:
+        run_name = f"{args.model}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        mlflow_tracker.start_run(run_name=run_name, tags={
+            'model_type': args.model,
+            'framework': 'xgboost' if args.model == 'xgboost' else 'sklearn'
+        })
+
+        # Log parameters
+        params = {
+            'model_type': args.model,
+            'test_size': args.test_size,
+            'val_size': args.val_size,
+            'n_features': len(feature_cols),
+            'n_train_samples': len(X_train),
+            'n_val_samples': len(X_val),
+            'n_test_samples': len(X_test),
+            'random_state': trainer.random_state
+        }
+
+        # Add model-specific hyperparameters
+        if args.model == 'xgboost':
+            params.update({
+                'n_estimators': 200,
+                'max_depth': 6,
+                'learning_rate': 0.1,
+                'objective': 'multi:softmax'
+            })
+        else:
+            params.update({
+                'n_estimators': 200,
+                'max_depth': 10,
+                'min_samples_split': 10,
+                'min_samples_leaf': 4
+            })
+
+        mlflow_tracker.log_params(params)
+
     trainer.train(X_train, y_train, X_val, y_val)
 
     # Evaluate on validation set
@@ -288,15 +349,75 @@ def main():
         'test': test_metrics
     }
 
-    # Save model
+    # Log metrics to MLflow
+    if mlflow_tracker:
+        # Log validation metrics
+        mlflow_tracker.log_metrics({
+            'val_accuracy': val_metrics['accuracy'],
+            'val_f1_macro': val_metrics['f1_macro'],
+            'val_f1_weighted': val_metrics['f1_weighted'],
+            'val_recall_macro': val_metrics['recall_macro'],
+            'val_recall_weighted': val_metrics['recall_weighted']
+        })
+
+        # Log test metrics
+        mlflow_tracker.log_metrics({
+            'test_accuracy': test_metrics['accuracy'],
+            'test_f1_macro': test_metrics['f1_macro'],
+            'test_f1_weighted': test_metrics['f1_weighted'],
+            'test_recall_macro': test_metrics['recall_macro'],
+            'test_recall_weighted': test_metrics['recall_weighted']
+        })
+
+        # Log confusion matrix as artifact
+        cm_dict = {
+            'confusion_matrix': test_metrics['confusion_matrix'],
+            'labels': ['low', 'medium', 'high']
+        }
+        mlflow_tracker.log_dict(cm_dict, 'confusion_matrix.json')
+
+        # Log feature importance
+        if hasattr(trainer.model, 'feature_importances_'):
+            feature_importance = pd.DataFrame({
+                'feature': trainer.feature_cols,
+                'importance': trainer.model.feature_importances_
+            }).sort_values('importance', ascending=False)
+
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+                feature_importance.to_csv(f.name, index=False)
+                mlflow_tracker.log_artifact(f.name, 'feature_importance.csv')
+
+        # Log model to MLflow
+        try:
+            signature = create_model_signature(X_train, y_train)
+            mlflow_tracker.log_model(
+                model=trainer.model,
+                artifact_path="model",
+                registered_model_name="volatility_predictor",
+                signature=signature,
+                input_example=X_train[:5]
+            )
+            print("\n✓ Model logged to MLflow registry")
+        except Exception as e:
+            print(f"\n⚠ Failed to log model to MLflow: {e}")
+
+    # Save model locally
     print("\n6. Saving model...")
     trainer.save_model(output_dir=args.output_dir)
+
+    # End MLflow run
+    if mlflow_tracker:
+        mlflow_tracker.end_run(status="FINISHED")
 
     print("\n" + "=" * 60)
     print("TRAINING COMPLETED SUCCESSFULLY!")
     print("=" * 60)
     print(f"\nTest Accuracy: {test_metrics['accuracy']:.4f}")
     print(f"Test F1 (Macro): {test_metrics['f1_macro']:.4f}")
+
+    if mlflow_tracker:
+        print("\n✓ View experiment in MLflow UI: http://localhost:5000")
 
 
 if __name__ == '__main__':

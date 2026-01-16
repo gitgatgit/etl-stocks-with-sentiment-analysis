@@ -15,9 +15,15 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     XAI_API_KEY: ${XAI_API_KEY}
     GROK_MODEL: ${GROK_MODEL:-grok-4-1-fast-reasoning}
+    MLFLOW_TRACKING_URI: http://mlflow:5000
+    # Alert integrations (configure at least one)
+    SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+    PAGERDUTY_ROUTING_KEY: ${PAGERDUTY_ROUTING_KEY:-}
+    TEAMS_WEBHOOK_URL: ${TEAMS_WEBHOOK_URL:-}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/utils:/opt/airflow/airflow/utils
     - ./dbt_project:/dbt
     - ./ml:/opt/airflow/ml
   depends_on:
@@ -123,9 +129,40 @@ services:
       - etl-network
     restart: always
 
+  mlflow:
+    image: python:3.11-slim
+    ports:
+      - "5000:5000"
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql://airflow:airflow@postgres/airflow
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
+    volumes:
+      - mlflow-artifacts:/mlflow/artifacts
+    working_dir: /mlflow
+    command: >
+      bash -c "pip install -q mlflow psycopg2-binary &&
+               mlflow server \
+                 --backend-store-uri postgresql://airflow:airflow@postgres/airflow \
+                 --default-artifact-root /mlflow/artifacts \
+                 --host 0.0.0.0 \
+                 --port 5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - etl-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 volumes:
   postgres-db-volume:
   metabase-data:
+  mlflow-artifacts:
 
 networks:
   etl-network:

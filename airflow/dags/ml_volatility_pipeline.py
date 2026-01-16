@@ -8,6 +8,14 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
+import sys
+
+# Add utils to path for alert imports
+sys.path.insert(0, '/opt/airflow')
+from airflow.utils.alerts import (
+    slack_failure_callback,
+    slack_success_callback,
+)
 
 
 default_args = {
@@ -18,6 +26,7 @@ default_args = {
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'on_failure_callback': slack_failure_callback,
 }
 
 
@@ -73,6 +82,7 @@ conn.close()
 "
     ''',
     dag=dag,
+    on_success_callback=slack_success_callback,
 )
 
 
